@@ -4,7 +4,7 @@ from typing import List, Dict, Optional
 from data_classes import Model
 
 
-class Mode:
+class Ollama:
     def __init__(self, link: str = "https://ollama.com/library") -> None:
         self.link = link
 
