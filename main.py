@@ -1,6 +1,7 @@
-def main():
-    print("Hello from ollama-model-api!")
+from typing import Union
+from fastapi import FastAPI
+from scrapper import Ollama
 
+ollama = Ollama()
 
-if __name__ == "__main__":
-    main()
+app = FastAPI()
