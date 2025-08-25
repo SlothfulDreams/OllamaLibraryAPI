@@ -8,13 +8,56 @@ class Ollama:
     def __init__(self, link: str = "https://ollama.com/library") -> None:
         self.link = link
 
-    def fetch_content(self):
+    # =============================================================================
+    # Public methods - Use these methods to interact with the Ollama class
+    # =============================================================================
+
+    def get_models(self) -> List[Model]:
+        model_elements = self._parse_models()
+        models = []
+        for element in model_elements:
+            model = self._extract_model_data(element)
+            models.append(model)
+        return models
+
+    def get_models_json(self) -> List[Dict]:
+        models = self.get_models()
+        return [model.to_dict() for model in models]
+
+    def get_model_by_name(self, name: str) -> Optional[Model]:
+        models = self.get_models()
+        for model in models:
+            if model.title.lower() == name.lower():
+                return model
+        return None
+
+    def get_models_by_capability(self, capability: str) -> List[Model]:
+        models = self.get_models()
+        return [
+            model
+            for model in models
+            if capability.lower() in [c.lower() for c in model.capabilities]
+        ]
+
+    def get_models_by_size(self, size: str) -> List[Model]:
+        models = self.get_models()
+        return [
+            model
+            for model in models
+            if size.lower() in [s.lower() for s in model.sizes]
+        ]
+
+    # =============================================================================
+    # Internal helper methods - Do not call these methods directly
+    # =============================================================================
+
+    def _fetch_content(self):
         r = requests.get(self.link)
         text = r.text
         return text
 
     def _parse_models(self):
-        html = self.fetch_content()
+        html = self._fetch_content()
         soup = BeautifulSoup(html, "html.parser")
         return soup.select("#repo li")
 
@@ -54,38 +97,3 @@ class Ollama:
             tags=tags,
             updated=updated,
         )
-
-    def get_models(self) -> List[Model]:
-        model_elements = self._parse_models()
-        models = []
-        for element in model_elements:
-            model = self._extract_model_data(element)
-            models.append(model)
-        return models
-
-    def get_models_json(self) -> List[Dict]:
-        models = self.get_models()
-        return [model.to_dict() for model in models]
-
-    def get_model_by_name(self, name: str) -> Optional[Model]:
-        models = self.get_models()
-        for model in models:
-            if model.title.lower() == name.lower():
-                return model
-        return None
-
-    def get_models_by_capability(self, capability: str) -> List[Model]:
-        models = self.get_models()
-        return [
-            model
-            for model in models
-            if capability.lower() in [c.lower() for c in model.capabilities]
-        ]
-
-    def get_models_by_size(self, size: str) -> List[Model]:
-        models = self.get_models()
-        return [
-            model
-            for model in models
-            if size.lower() in [s.lower() for s in model.sizes]
-        ]
