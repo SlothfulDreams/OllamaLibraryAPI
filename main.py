@@ -29,7 +29,7 @@ def get_model_by_name(name: str):
 
 @app.get("/get_model_by_capability")
 def get_models_by_capability(capability: str):
-    return ollama.get_model_by_name(capability)
+    return ollama.get_models_by_capability(capability)
 
 
 @app.get("/get_models_size")
