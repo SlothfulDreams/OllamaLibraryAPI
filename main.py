@@ -32,6 +32,6 @@ def get_models_by_capability(capability: str):
     return ollama.get_model_by_name(capability)
 
 
-@app.get("get_models_size")
+@app.get("/get_models_size")
 def get_models_by_size(size: str):
     return ollama.get_models_by_size(size)
