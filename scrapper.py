@@ -2,17 +2,22 @@ import requests
 from bs4 import BeautifulSoup
 from typing import List, Dict, Optional
 from data_classes import Model
+from cache import InMemoryCache
 
 
 class Ollama:
-    def __init__(self, link: str = "https://ollama.com/library") -> None:
+    def __init__(self, link: str = "https://ollama.com/library", cache_hours: float = 12) -> None:
         self.link = link
+        self.cache = InMemoryCache(ttl_hours=cache_hours)
 
     # =============================================================================
     # Public methods - Use these methods to interact with the Ollama class
     # =============================================================================
 
     def get_models(self) -> List[Model]:
+        return self.cache.get("models", self._fetch_and_parse_models)
+    
+    def _fetch_and_parse_models(self) -> List[Model]:
         model_elements = self._parse_models()
         models = []
         for element in model_elements:
@@ -46,6 +51,9 @@ class Ollama:
             for model in models
             if size.lower() in [s.lower() for s in model.sizes]
         ]
+    
+    def get_cache_status(self) -> dict:
+        return self.cache.get_cache_info("models")
 
     # =============================================================================
     # Internal helper methods - Do not call these methods directly
